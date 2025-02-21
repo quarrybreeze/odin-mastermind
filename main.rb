@@ -8,6 +8,10 @@
 # input 4 colors
 
 require_relative 'lib/board'
+require_relative 'lib/game'
 
-Game = Board.new
-Game.generate_code
+
+
+puts
+
+game = Board.new
