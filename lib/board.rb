@@ -6,11 +6,12 @@ class Board
     @feedback = []
     @code_colours = ["red", "blue", "green", "yellow", "pink", "orange"]
     @feedback_colours = ["white", "black", "empty"]
+    @guess_number = 1
 
     puts "Lets play: Mastermind"
     self.select_role
     if @role == "guesser"
-      self.generate_code
+      self.computer_generate_code
       until @feedback == ["black", "black", "black", "black"] do
         play_round_guesser
       end
@@ -18,7 +19,11 @@ class Board
       exit
 
     elsif @role == "creator"
-      puts "Not yet built!"
+      self.player_generate_code
+      until @feedback == ["black", "black", "black", "black"] do
+        computer_guess_code
+      end
+      puts "Computer wins after #{@guess_number} guesses"
       exit
     end 
   end
@@ -43,9 +48,35 @@ class Board
     end
   end
 
-  def generate_code
+  def computer_generate_code
+    # 4.times do
+    #   @code.push(@code_colours.sample)
+    # end
     @code = ["blue", "green", "yellow", "red"]
     p @code
+  end
+
+  def computer_guess_code
+    guess_array = []
+    4.times do
+      guess_array.push(@code_colours.sample)
+    end
+    puts "Computer guess ##{@guess_number} #{guess_array}"
+    @guess_number += 1
+    self.get_feedback(guess_array)
+  end
+
+  def player_generate_code
+    puts "What code do you choose?"
+    puts "The colour options are red, blue, green, yellow, pink, orange"
+    input = gets.chomp.split(", ")
+    input.each do |colour|
+      if (@code_colours.include?(colour) == false)
+        puts "You chose a wrong colour. try again"
+        self.player_generate_code
+      end
+    end
+    @code = input
   end
 
   def get_feedback(guess_array)
