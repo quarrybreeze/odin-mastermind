@@ -1,4 +1,5 @@
 class Board
+  attr_accessor :feedback, :code
   
   def initialize
     @role = ""
@@ -15,12 +16,12 @@ class Board
       until @feedback == ["black", "black", "black", "black"] do
         play_round_guesser
       end
-      puts "You win!"
+      puts "You win! It took you #{@guess_number} guesses!"
       exit
 
     elsif @role == "creator"
       self.player_generate_code
-      until @feedback == ["black", "black", "black", "black"] do
+      until @feedback == ["black"] * @code.length do
         computer_guess_code
       end
       puts "Computer wins after #{@guess_number} guesses"
@@ -49,25 +50,20 @@ class Board
   end
 
   def computer_generate_code
-    # 4.times do
-    #   @code.push(@code_colours.sample)
-    # end
-    @code = ["blue", "green", "yellow", "red"]
-    p @code
+    4.times do
+      @code.push(@code_colours.sample)
+    end
   end
 
   def computer_guess_code
-    guess_array = []
-    4.times do
-      guess_array.push(@code_colours.sample)
-    end
-    puts "Computer guess ##{@guess_number} #{guess_array}"
+    guess_array = Array.new(@code.length) { @code_colours.sample }  # Random full guess
+    puts "Computer guess ##{@guess_number} is #{guess_array}"
+    get_feedback(guess_array)
     @guess_number += 1
-    self.get_feedback(guess_array)
   end
 
   def player_generate_code
-    puts "What code do you choose?"
+    puts "Choose 1 colour?"
     puts "The colour options are red, blue, green, yellow, pink, orange"
     input = gets.chomp.split(", ")
     input.each do |colour|
@@ -77,25 +73,24 @@ class Board
       end
     end
     @code = input
+    p @code
   end
 
   def get_feedback(guess_array)
     @feedback = []
-    guess_array.each do |guess|
-      if @code.include?(guess) == true
+    
+    # Track exact matches first
+    guess_array.each_with_index do |guess, index|
+      if guess == @code[index]
+        @feedback.push("black")
+      elsif @code.include?(guess)
         @feedback.push("white")
-      else 
+      else
         @feedback.push("none")
       end
     end
-
-    guess_array.each do |guess|
-      if (guess_array[guess_array.index(guess).to_i] == @code[guess_array.index(guess).to_i])
-        @feedback[guess_array.index(guess).to_i] = "black"
-      end
-    end
-
-    @feedback = @feedback.reject {|peg| peg =='none'}
+  
+    @feedback.reject! { |peg| peg == 'none' } # Remove 'none' pegs
     puts "Generating feedback..."
     p @feedback
   end
@@ -109,6 +104,8 @@ class Board
         self.play_round_guesser
       end
     end
+    puts "Player guess ##{@guess_number}"
+    @guess_number += 1
     self.get_feedback(guess_array)
   end
 
