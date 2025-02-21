@@ -13,9 +13,10 @@ class Board
   end
 
   def generate_code
-    4.times do
-      @code.push(@code_colours.sample)
-    end
+    # 4.times do
+    #   @code.push(@code_colours.sample)
+    # end
+    @code = ["blue", "green", "yellow", "red"]
     p @code
   end
 
@@ -25,11 +26,18 @@ class Board
       # p guess_array.index(guess)
 
       if @code.include?(guess) == true
-        @feedback[guess_array.index(guess).to_i] = "white"
+        @feedback.push("white")
       else 
-        @feedback[guess_array.index(guess).to_i] = "none"
+        @feedback.push("none")
       end
     end
+
+    guess_array.each do |guess|
+      if (guess_array[guess_array.index(guess).to_i] == @code[guess_array.index(guess).to_i])
+        @feedback[guess_array.index(guess).to_i] = "Black"
+      end
+    end
+    @feedback = @feedback.reject {|peg| peg =='none'}
     puts "Generating feedback..."
     p @feedback
   end
